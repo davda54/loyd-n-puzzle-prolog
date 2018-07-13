@@ -1,7 +1,7 @@
 %% Loydovu NxN-tici řeším s pomocí A* vyhledávání, které jako heuristiku používá manhattenovskou vzdálenost od cílového stavu
 %%
 %% Stav je reprezentován jako pětice Pozice-Hloubka-Cena-Posloupnost-Vystup, kde
-%%	- Pozice je N*N-členný seznam
+%%  - Pozice je N*N-členný seznam
 %%  - Hloubka je hloubka v prohledávání od startovní pozice
 %%  - Cena je dolní odhad poctu tahu do cílové pozice
 %%  - Posloupnost je akumulátor už prošlých pozic od startovního stavu
@@ -17,7 +17,7 @@ vyres_std(Start, Druh, Vystup) :- sirka(Start, N),
                                   vyres(Start, Cil, N, Druh, Vystup).
 
 vyres(Start, Cil, N, Druh, Vystup) :- heuristika(Start, 0, N, Druh, Cena),
-					                            vynuluj_cache(),
+				      vynuluj_cache(),
                                       najdi([Start-0-Cena-[]-[]], Cil, N, Druh, Obraceny_vystup),
                                       reverse(Obraceny_vystup, Vystup).
 
@@ -27,22 +27,22 @@ vyres(Start, Cil, N, Druh, Vystup) :- heuristika(Start, 0, N, Druh, Cena),
 
 najdi([Cil-_-_-_-Vystup | _], Cil, _, _, Vystup)         :- !.
 najdi([Nejlevnejsi_Stav | Zbytek], Cil, N, Druh, Vystup) :- je_v_cache(Nejlevnejsi_Stav, N), !,
-				                                                    najdi(Zbytek, Cil, N, Druh, Vystup).
+				                            najdi(Zbytek, Cil, N, Druh, Vystup).
 
 najdi([Nejlevnejsi_Stav | Zbytek], Cil, N, Druh, Vystup) :- rozvetvi(Nejlevnejsi_Stav, N, Druh, Deti),
-										                                        vloz_mnozinu_do_prioritni_fronty(Deti, Zbytek, Neprozkoumane),
-											                                      pridej_do_cache(Nejlevnejsi_Stav, N),
-										                                        najdi(Neprozkoumane, Cil, N, Druh, Vystup).
+							    vloz_mnozinu_do_prioritni_fronty(Deti, Zbytek, Neprozkoumane),
+							    pridej_do_cache(Nejlevnejsi_Stav, N),
+							    najdi(Neprozkoumane, Cil, N, Druh, Vystup).
 
 
 %% vyrobí množinu všech stavŮ, do kterych se lze dostat ze stavu *Rodic*
 rozvetvi(Rodic-Hloubka_Rodice-_-A-Vystup, N, Druh, Deti) :- bagof(Dite-Hloubka_Ditete-Cena-[Dite|A]-[Symbol|Vystup],
-													                                    ( Hloubka_Ditete is Hloubka_Rodice + 1,
-											                                          presun(Rodic, Dite, Symbol, N),
+							      ( Hloubka_Ditete is Hloubka_Rodice + 1,
+								presun(Rodic, Dite, Symbol, N),
                                                                 \+member(Dite, A),
-											                                          heuristika(Dite, Hloubka_Ditete, N, Druh, Cena)
-											                                        ),
-										                                          Deti).
+								heuristika(Dite, Hloubka_Ditete, N, Druh, Cena)
+							      ),
+							      Deti).
 
 
 
@@ -50,7 +50,7 @@ rozvetvi(Rodic-Hloubka_Rodice-_-A-Vystup, N, Druh, Deti) :- bagof(Dite-Hloubka_D
 
 vloz_mnozinu_do_prioritni_fronty([], Fronta, Fronta).
 vloz_mnozinu_do_prioritni_fronty([Prvek|Mnozina], Puvodni_fronta, Vysledna_fronta) :- vloz_prvek_do_prioritni_fronty(Prvek, Puvodni_fronta, Mezi_fronta),
-																	                                                    vloz_mnozinu_do_prioritni_fronty(Mnozina, Mezi_fronta, Vysledna_fronta).
+										      vloz_mnozinu_do_prioritni_fronty(Mnozina, Mezi_fronta, Vysledna_fronta).
 
 vloz_prvek_do_prioritni_fronty(Stav-_-_-_-_, [Stav-X-Y-Z-V|W], [Stav-X-Y-Z-V|W])                       :- !.
 vloz_prvek_do_prioritni_fronty(Mensi_prvek, [Vetsi_prvek|Fronta], [Mensi_prvek, Vetsi_prvek|Fronta])   :- mensi(Mensi_prvek, Vetsi_prvek), !.
